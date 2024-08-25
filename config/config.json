@@ -1,0 +1,9 @@
+{
+    "apiKey": "YOUR_API_KEY",
+    "feedUrl": "https://api.awardco.com/api/social-feed",
+    "domain": "awardco.com",
+    "org_list": [ "usernamelist" ],
+    "page": 1,
+    "limit": 2000,
+    "numPages": 10
+}
