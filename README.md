@@ -3,8 +3,6 @@
 ## Description
 The Awardco Feed project is a web application that displays a dynamic feed of recognitions fetched from the Awardco API. The feed showcases various recognitions, including the name of the person recognized, their avatar, and the program under which they were recognized. The application features a rotating display of recognitions.
 
-![img.png](img.png)
-
 ## Installation
 ### Linux/macOS
 1. Clone the repository:
