@@ -3,13 +3,15 @@ $config = json_decode(file_get_contents(__DIR__ . '/../config/config.json'), tru
 
 $startTime = microtime(true);
 
-$apiKey = $config['apiKey'];
-$feedUrl = $config['feedUrl'];
-$orguserList = $config['org_list'];
-$domain = $config['domain'];
-$page = $config['page'];
-$limit = $config['limit'];
-$numPages = $config['numPages'];
+$apiKey = filter_var($config['apiKey'], FILTER_SANITIZE_STRING);
+$feedUrl = filter_var($config['feedUrl'], FILTER_SANITIZE_URL);
+$orguserList = array_map(function($user) {
+    return filter_var($user, FILTER_SANITIZE_STRING);
+}, $config['org_list']);
+$domain = filter_var($config['domain'], FILTER_SANITIZE_STRING);
+$page = filter_var($config['page'], FILTER_VALIDATE_INT);
+$limit = filter_var($config['limit'], FILTER_VALIDATE_INT);
+$numPages = filter_var($config['numPages'], FILTER_VALIDATE_INT);
 
 foreach ($config as $key => $value) {
     if ($key !== 'apiKey' && $key !== 'org_list') {
@@ -64,13 +66,14 @@ curl_multi_close($multiHandle);
 
 function filterFeedByUsername($feed, $orguserList, $domain) {
     $emailList = array_map(function($username) use ($domain) {
-        return $username . '@' . $domain;
+        return filter_var($username, FILTER_SANITIZE_STRING) . '@' . filter_var($domain, FILTER_SANITIZE_STRING);
     }, $orguserList);
 
     return array_filter($feed, function($item) use ($emailList) {
         return in_array($item['to'][0]['email'] ?? '', $emailList);
     });
 }
+
 error_log('Total actual recognitions: ' . count($feed));
 $feed = filterFeedByUsername($feed, $orguserList, $domain);
 error_log('Total filtered recognitions: ' . count($feed));
