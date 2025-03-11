@@ -28,7 +28,7 @@ Resources:
             chown -R ec2-user:ec2-user /var/www/html/awardco-feed
             cat > /var/www/html/awardco-feed/config/config.json <<EOL
             {
-                "apiKey": "7ea2796896d842d482ff11bbef2aa8cf",
+                "apiKey": "****************************",
                 "feedUrl": "https://api.awardco.com/api/social-feed",
                 "domain": "website.com",
                 "org_list": [
