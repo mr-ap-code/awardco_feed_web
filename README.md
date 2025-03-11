@@ -7,7 +7,7 @@ The Awardco Feed project is a web application that displays a dynamic feed of re
 ### Linux/macOS
 1. Clone the repository:
     ```sh
-    git clone git@git.corp.adobe.com:abalachandra/awardco-feed.git
+    git clone git@github.com:mr-ap-code/awardco_feed_web.git
     cd awardco-feed
     ```
 
@@ -22,7 +22,7 @@ The Awardco Feed project is a web application that displays a dynamic feed of re
 ### Windows
 1. Clone the repository:
     ```sh
-    git clone git@git.corp.adobe.com:abalachandra/awardco-feed.git
+    git clone git@github.com:mr-ap-code/awardco_feed_web.git
     cd awardco-feed
     ```
 
