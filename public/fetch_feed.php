@@ -74,8 +74,15 @@ function filterFeedByUsername($feed, $orguserList, $domain) {
     });
 }
 
+function filterOutSolrAdminInfoSystem($feed) {
+    return array_filter($feed, function($item) {
+        return strpos($item['request_uri'] ?? '', 'solr/admin/info/system') === false;
+    });
+}
+
 error_log('Total actual recognitions: ' . count($feed));
 $feed = filterFeedByUsername($feed, $orguserList, $domain);
+$feed = filterOutSolrAdminInfoSystem($feed);
 error_log('Total filtered recognitions: ' . count($feed));
 
 $endTime = microtime(true);

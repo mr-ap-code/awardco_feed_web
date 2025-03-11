@@ -1,0 +1,85 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Template to host awardco feed application on t2.micro instance
+
+Resources:
+  MyKeyPair:
+    Type: 'AWS::EC2::KeyPair'
+    Properties:
+      KeyName: MyKeyPair
+
+  MyEC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: t2.micro
+      KeyName: !Ref MyKeyPair
+      ImageId: ami-066784287e358dad1 # Amazon Linux 2 AMI
+      SecurityGroupIds:
+        - !Ref InstanceSecurityGroup
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            yum update -y
+            yum install -y php php-curl git
+            mkdir -p /var/www/html
+            cd /var/www/html
+            git clone https://github.com/abalachandra/awardco_feed_web.git awardco-feed
+            cd awardco-feed
+            chown -R ec2-user:ec2-user /var/www/html/awardco-feed
+            cat > /var/www/html/awardco-feed/config/config.json <<EOL
+            {
+                "apiKey": "7ea2796896d842d482ff11bbef2aa8cf",
+                "feedUrl": "https://api.awardco.com/api/social-feed",
+                "domain": "website.com",
+                "org_list": [
+                    "arunlee"
+                ],
+                "page": 1,
+                "limit": 2000,
+                "numPages": 10
+            }
+            EOL
+            cat >> /etc/httpd/conf/httpd.conf <<EOL
+            <Directory "/var/www/html">
+                AllowOverride None
+                Require all granted
+            </Directory>
+
+            <Directory "/var/www/html/cgi-bin">
+                Require all denied
+            </Directory>
+
+            <Directory "/var/www/html/.git">
+                Require all denied
+            </Directory>
+
+            <Directory "/var/www/html/private">
+                Require all denied
+            </Directory>
+            EOL
+            systemctl start httpd
+            systemctl enable httpd
+            sudo php -S 0.0.0.0:8080 -t public
+
+  InstanceSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable HTTP, SSH, and custom port access
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: '0.0.0.0/0'
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: '0.0.0.0/0'
+        - IpProtocol: tcp
+          FromPort: '8080'
+          ToPort: '8080'
+          CidrIp: '0.0.0.0/0'
+
+Outputs:
+    InstancePublicDNS:
+        Description: Public DNS name of the EC2 instance
+        Value: !GetAtt MyEC2Instance.PublicDnsName
